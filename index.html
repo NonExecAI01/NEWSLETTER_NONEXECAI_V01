@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Board Leadership & Corporate Governance Daily Briefing</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #122038;
+      --muted: #9a9e9f;
+      --border: #d9e0ea;
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --brand: #186496;
+      --brand-soft: #e7f6f6;
+      --accent: #4bbaba;
+      --warn: #9b1c1c;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Roboto", "Segoe UI", Arial, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.45;
+    }
+    .wrapper {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 24px 14px 40px;
+    }
+    .hero {
+      background: linear-gradient(120deg, #186496 0%, #4bbaba 100%);
+      color: #fff;
+      border-radius: 16px;
+      padding: 28px 22px;
+      box-shadow: 0 10px 30px rgba(6, 29, 66, 0.2);
+    }
+    .eyebrow {
+      display: inline-block;
+      margin: 0 0 10px;
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      opacity: 0.92;
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(1.45rem, 3vw, 2.2rem);
+      line-height: 1.25;
+    }
+    .hero p {
+      margin: 12px 0 0;
+      max-width: 780px;
+      color: #d8e6ff;
+    }
+    .meta {
+      margin-top: 14px;
+      font-size: 0.95rem;
+      opacity: 0.95;
+    }
+    .cta {
+      margin-top: 18px;
+      display: inline-block;
+      background: #fff;
+      color: var(--brand);
+      text-decoration: none;
+      font-weight: 700;
+      border-radius: 999px;
+      padding: 11px 18px;
+    }
+    .status {
+      margin: 16px 4px 0;
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+    .status.error { color: var(--warn); }
+    .section-title {
+      margin: 26px 4px 12px;
+      font-size: 1.1rem;
+      color: #20344f;
+    }
+    .featured-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 14px;
+    }
+    .article-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+    }
+    .article-card.featured {
+      border-color: #4bbaba;
+      background: var(--brand-soft);
+      box-shadow: 0 8px 20px rgba(15, 50, 110, 0.12);
+    }
+    .thumb {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      background: #dde7f6;
+    }
+    .content {
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      flex: 1;
+    }
+    .tag {
+      display: inline-block;
+      width: fit-content;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--accent);
+      font-weight: 700;
+    }
+    .article-title {
+      margin: 0;
+      font-size: 1rem;
+      line-height: 1.35;
+    }
+    .featured .article-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+    }
+    .article-title a {
+      color: var(--ink);
+      text-decoration: none;
+    }
+    .article-title a:hover { text-decoration: underline; }
+    .summary {
+      margin: 0;
+      color: #334861;
+      font-size: 0.94rem;
+    }
+    .foot {
+      margin-top: auto;
+      font-size: 0.82rem;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .list-grid {
+      margin-top: 8px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+    }
+    .footer-note {
+      margin: 22px 4px 0;
+      color: #4f6076;
+      font-size: 0.88rem;
+    }
+    @media (max-width: 620px) {
+      .wrapper { padding: 14px 10px 26px; }
+      .hero { border-radius: 12px; padding: 18px 14px; }
+      .content { padding: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <section class="hero">
+      <span class="eyebrow">Daily Executive Intelligence</span>
+      <h1>Board Leadership &amp; Corporate Governance Briefing</h1>
+      <p>Curated global coverage for board directors, governance professionals, and executive leaders. Stay ahead of shifts in AI, oversight, compliance, and strategic decision-making.</p>
+      <div id="published-meta" class="meta">Published: Loading...</div>
+      <a class="cta" href="https://www.non-exec.ai" target="_blank" rel="noopener noreferrer">Explore www.non-exec.ai</a>
+    </section>
+
+    <p id="status" class="status">Loading and ranking articles...</p>
+
+    <h2 class="section-title">Top 2 Priority Stories</h2>
+    <section id="featured-grid" class="featured-grid"></section>
+
+    <h2 class="section-title">Additional Top Stories</h2>
+    <section id="list-grid" class="list-grid"></section>
+
+    <p class="footer-note">Generated from public Google News RSS coverage. Powered by <a href="https://www.non-exec.ai" target="_blank" rel="noopener noreferrer">www.non-exec.ai</a>.</p>
+  </div>
+
+  <script>
+    (function () {
+      const SEARCH_QUERIES = [
+        "AI corporate governance",
+        "Digital board member",
+        "Boardroom AI software",
+        "AI board advisory",
+        "Data-driven corporate governance",
+        "Real-time strategic foresight",
+        "AI risk mitigation",
+        "Unbiased board intelligence",
+        "Continuous market analysis AI",
+        "Executive decision-making AI",
+        "Corporate compliance AI",
+        "Ethical leadership AI",
+        "Sustainable enterprise growth AI",
+        "Predictive board intelligence",
+        "AI enterprise governance",
+        "Automated strategic planning",
+        "AI director",
+        "Corporate governance technology"
+      ];
+
+      const KEYWORD_WEIGHTS = {
+        ai: 4.0,
+        board: 3.4,
+        governance: 3.8,
+        corporate: 2.7,
+        director: 2.0,
+        leadership: 2.0,
+        compliance: 2.2,
+        risk: 2.0,
+        ethics: 1.8,
+        strategy: 1.6,
+        oversight: 1.5,
+        intelligence: 1.5
+      };
+
+      const MAX_ARTICLES = 10;
+      const FEATURED_COUNT = 2;
+      const statusEl = document.getElementById("status");
+      const featuredGridEl = document.getElementById("featured-grid");
+      const listGridEl = document.getElementById("list-grid");
+      const publishedMetaEl = document.getElementById("published-meta");
+
+      function formatGoogleNewsRss(query) {
+        const encoded = encodeURIComponent(query);
+        return "https://news.google.com/rss/search?q=" + encoded + "&hl=en-US&gl=US&ceid=US:en";
+      }
+
+      function rssToJsonUrl(rssUrl) {
+        // Public feed-to-JSON proxy so static GitHub Pages can consume RSS without server code.
+        return "https://api.rss2json.com/v1/api.json?rss_url=" + encodeURIComponent(rssUrl);
+      }
+
+      function parseDate(raw) {
+        const date = new Date(raw);
+        return Number.isNaN(date.getTime()) ? new Date() : date;
+      }
+
+      function cleanHtmlToText(htmlText) {
+        const div = document.createElement("div");
+        div.innerHTML = htmlText || "";
+        const text = (div.textContent || div.innerText || "").replace(/\s+/g, " ").trim();
+        return text.length > 220 ? text.slice(0, 219).trimEnd() + "..." : text;
+      }
+
+      function extractImage(item) {
+        if (item.enclosure && item.enclosure.link) {
+          return item.enclosure.link;
+        }
+        const content = item.content || "";
+        const match = content.match(/<img[^>]+src=["']([^"']+)["']/i);
+        return match ? match[1] : "";
+      }
+
+      function keywordScore(title, summary) {
+        const content = (title + " " + summary).toLowerCase();
+        let score = 0;
+        Object.keys(KEYWORD_WEIGHTS).forEach(function (keyword) {
+          const matches = (content.match(new RegExp("\\b" + keyword + "\\b", "g")) || []).length;
+          score += matches * KEYWORD_WEIGHTS[keyword];
+        });
+        return score;
+      }
+
+      function recencyScore(publishedDate, nowDate) {
+        const hoursOld = Math.max((nowDate - publishedDate) / (1000 * 60 * 60), 0);
+        return Math.exp(-hoursOld / 36) * 8.0;
+      }
+
+      function scoreArticle(article, nowDate) {
+        return keywordScore(article.title, article.summary) + recencyScore(article.published, nowDate);
+      }
+
+      function articleCardHtml(article, featured) {
+        const safeTitle = article.title.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        const safeSummary = article.summary.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        const safeSource = article.source.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        const dateText = article.published.toUTCString().replace("GMT", "UTC");
+        const thumb = article.thumbnail
+          ? '<img class="thumb" src="' + article.thumbnail + '" alt="Article image" loading="lazy" />'
+          : "";
+
+        return (
+          '<article class="article-card' + (featured ? " featured" : "") + '">' +
+            thumb +
+            '<div class="content">' +
+              (featured ? '<span class="tag">Priority Brief</span>' : "") +
+              '<h3 class="article-title"><a href="' + article.link + '" target="_blank" rel="noopener noreferrer">' + safeTitle + "</a></h3>" +
+              '<p class="summary">' + safeSummary + "</p>" +
+              '<div class="foot"><span>' + safeSource + "</span><span>" + dateText + "</span></div>" +
+            "</div>" +
+          "</article>"
+        );
+      }
+
+      function updateIframeHeight() {
+        const height = Math.max(
+          document.body.scrollHeight,
+          document.documentElement.scrollHeight,
+          document.body.offsetHeight,
+          document.documentElement.offsetHeight
+        );
+        window.parent.postMessage({ type: "newsletter:height", height: height }, "*");
+      }
+
+      async function fetchFeed(feedUrl) {
+        const response = await fetch(rssToJsonUrl(feedUrl));
+        if (!response.ok) {
+          throw new Error("Failed feed request");
+        }
+        const payload = await response.json();
+        if (!payload.items || !Array.isArray(payload.items)) {
+          return [];
+        }
+        return payload.items.map(function (item) {
+          return {
+            title: item.title || "Untitled article",
+            link: item.link || "",
+            source: (payload.feed && payload.feed.title) || "Google News",
+            summary: cleanHtmlToText(item.description || item.content || ""),
+            published: parseDate(item.pubDate),
+            thumbnail: extractImage(item)
+          };
+        }).filter(function (item) {
+          return Boolean(item.link);
+        });
+      }
+
+      async function buildNewsletter() {
+        try {
+          const feedUrls = SEARCH_QUERIES.map(formatGoogleNewsRss);
+          const allResults = await Promise.allSettled(feedUrls.map(fetchFeed));
+          const merged = [];
+          const dedupe = new Map();
+          const now = new Date();
+
+          allResults.forEach(function (result) {
+            if (result.status !== "fulfilled") {
+              return;
+            }
+            result.value.forEach(function (article) {
+              const key = article.link.toLowerCase();
+              article.score = scoreArticle(article, now);
+              if (!dedupe.has(key) || dedupe.get(key).score < article.score) {
+                dedupe.set(key, article);
+              }
+            });
+          });
+
+          dedupe.forEach(function (value) {
+            merged.push(value);
+          });
+
+          merged.sort(function (a, b) {
+            if (b.score !== a.score) {
+              return b.score - a.score;
+            }
+            return b.published - a.published;
+          });
+
+          const top = merged.slice(0, MAX_ARTICLES);
+          const featured = top.slice(0, FEATURED_COUNT);
+          const standard = top.slice(FEATURED_COUNT);
+
+          featuredGridEl.innerHTML = featured.map(function (article) {
+            return articleCardHtml(article, true);
+          }).join("");
+
+          listGridEl.innerHTML = standard.map(function (article) {
+            return articleCardHtml(article, false);
+          }).join("");
+
+          publishedMetaEl.textContent = "Published: " + new Date().toUTCString().replace("GMT", "UTC");
+          statusEl.textContent = "Loaded " + top.length + " ranked articles from governance-focused Google News feeds.";
+          statusEl.classList.remove("error");
+          updateIframeHeight();
+        } catch (error) {
+          statusEl.textContent = "Unable to load feeds right now. Please refresh in a few moments.";
+          statusEl.classList.add("error");
+          updateIframeHeight();
+        }
+      }
+
+      window.addEventListener("load", function () {
+        buildNewsletter();
+        updateIframeHeight();
+      });
+      window.addEventListener("resize", updateIframeHeight);
+      setTimeout(updateIframeHeight, 500);
+    })();
+  </script>
+</body>
+</html>
