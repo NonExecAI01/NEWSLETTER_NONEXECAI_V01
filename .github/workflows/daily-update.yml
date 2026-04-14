@@ -1,0 +1,29 @@
+name: Daily Newsletter Refresh
+
+on:
+  schedule:
+    - cron: '0 6 * * *'   # Runs every day at 06:00 UTC
+  workflow_dispatch:        # Allows manual trigger from GitHub Actions UI
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Update LAST_UPDATED timestamp
+        run: |
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          sed -i "s/<!-- LAST_UPDATED:.*-->/<!-- LAST_UPDATED: ${TIMESTAMP} -->/" index.html
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet || git commit -m "chore: daily newsletter refresh [$(date -u +%Y-%m-%d)]"
+          git push
