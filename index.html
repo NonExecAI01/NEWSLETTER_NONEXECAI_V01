@@ -1,3 +1,4 @@
+<!-- LAST_UPDATED: 2026-04-14T06:00:00Z -->
 <!doctype html>
 <html lang="en">
 <head>
@@ -163,6 +164,21 @@
       color: #4f6076;
       font-size: 0.88rem;
     }
+    .refresh-btn {
+      display: inline-block;
+      margin-left: 12px;
+      background: rgba(255,255,255,0.18);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.55);
+      border-radius: 999px;
+      padding: 6px 14px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      vertical-align: middle;
+      transition: background 0.15s;
+    }
+    .refresh-btn:hover { background: rgba(255,255,255,0.30); }
     @media (max-width: 620px) {
       .wrapper { padding: 14px 10px 26px; }
       .hero { border-radius: 12px; padding: 18px 14px; }
@@ -176,7 +192,7 @@
       <span class="eyebrow">Daily Executive Intelligence</span>
       <h1>Board Leadership &amp; Corporate Governance Briefing</h1>
       <p>Curated global coverage for board directors, governance professionals, and executive leaders. Stay ahead of shifts in AI, oversight, compliance, and strategic decision-making.</p>
-      <div id="published-meta" class="meta">Published: Loading...</div>
+      <div id="published-meta" class="meta"><span id="published-date">Published: Loading...</span><button class="refresh-btn" id="refresh-btn" title="Refresh newsletter now">↻ Refresh</button></div>
       <a class="cta" href="https://www.non-exec.ai" target="_blank" rel="noopener noreferrer">Explore www.non-exec.ai</a>
     </section>
 
@@ -234,7 +250,7 @@
       const statusEl = document.getElementById("status");
       const featuredGridEl = document.getElementById("featured-grid");
       const listGridEl = document.getElementById("list-grid");
-      const publishedMetaEl = document.getElementById("published-meta");
+      const publishedDateEl = document.getElementById("published-date");
 
       function formatGoogleNewsRss(query) {
         const encoded = encodeURIComponent(query);
@@ -341,6 +357,20 @@
         });
       }
 
+      function scheduleNextRefresh() {
+        const now = new Date();
+        const next = new Date();
+        next.setUTCHours(6, 0, 0, 0);
+        if (next <= now) {
+          next.setUTCDate(next.getUTCDate() + 1);
+        }
+        const msUntilNext = next - now;
+        setTimeout(function () {
+          buildNewsletter();
+          scheduleNextRefresh();
+        }, msUntilNext);
+      }
+
       async function buildNewsletter() {
         try {
           const feedUrls = SEARCH_QUERIES.map(formatGoogleNewsRss);
@@ -385,7 +415,7 @@
             return articleCardHtml(article, false);
           }).join("");
 
-          publishedMetaEl.textContent = "Published: " + new Date().toUTCString().replace("GMT", "UTC");
+          publishedDateEl.textContent = "Published: " + new Date().toUTCString().replace("GMT", "UTC");
           statusEl.textContent = "Loaded " + top.length + " ranked articles from governance-focused Google News feeds.";
           statusEl.classList.remove("error");
           updateIframeHeight();
@@ -397,8 +427,14 @@
       }
 
       window.addEventListener("load", function () {
+        document.getElementById("refresh-btn").addEventListener("click", function () {
+          statusEl.textContent = "Refreshing...";
+          statusEl.classList.remove("error");
+          buildNewsletter();
+        });
         buildNewsletter();
         updateIframeHeight();
+        scheduleNextRefresh();
       });
       window.addEventListener("resize", updateIframeHeight);
       setTimeout(updateIframeHeight, 500);
