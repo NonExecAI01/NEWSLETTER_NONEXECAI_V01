@@ -422,7 +422,7 @@
           }).join("");
 
           publishedDateEl.textContent = "Published: " + new Date().toUTCString().replace("GMT", "UTC");
-          statusEl.textContent = "Loaded " + top.length + " ranked articles from the last 24 hours across governance-focused Google News feeds.";
+          statusEl.textContent = "";
           statusEl.classList.remove("error");
           updateIframeHeight();
         } catch (error) {
