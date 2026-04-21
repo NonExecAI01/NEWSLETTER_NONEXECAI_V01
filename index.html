@@ -254,7 +254,8 @@
 
       function formatGoogleNewsRss(query) {
         const encoded = encodeURIComponent(query);
-        return "https://news.google.com/rss/search?q=" + encoded + "&hl=en-US&gl=US&ceid=US:en";
+        // tbs=qdr:d restricts results to the last 24 hours
+        return "https://news.google.com/rss/search?q=" + encoded + "&hl=en-US&gl=US&ceid=US:en&tbs=qdr:d";
       }
 
       function rssToJsonUrl(rssUrl) {
@@ -295,7 +296,7 @@
 
       function recencyScore(publishedDate, nowDate) {
         const hoursOld = Math.max((nowDate - publishedDate) / (1000 * 60 * 60), 0);
-        return Math.exp(-hoursOld / 36) * 8.0;
+        return Math.exp(-hoursOld / 12) * 8.0;
       }
 
       function scoreArticle(article, nowDate) {
@@ -379,11 +380,16 @@
           const dedupe = new Map();
           const now = new Date();
 
+          const cutoff = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+
           allResults.forEach(function (result) {
             if (result.status !== "fulfilled") {
               return;
             }
             result.value.forEach(function (article) {
+              if (article.published < cutoff) {
+                return; // skip articles older than 24 hours
+              }
               const key = article.link.toLowerCase();
               article.score = scoreArticle(article, now);
               if (!dedupe.has(key) || dedupe.get(key).score < article.score) {
@@ -416,7 +422,7 @@
           }).join("");
 
           publishedDateEl.textContent = "Published: " + new Date().toUTCString().replace("GMT", "UTC");
-          statusEl.textContent = "Loaded " + top.length + " ranked articles from governance-focused Google News feeds.";
+          statusEl.textContent = "Loaded " + top.length + " ranked articles from the last 24 hours across governance-focused Google News feeds.";
           statusEl.classList.remove("error");
           updateIframeHeight();
         } catch (error) {
