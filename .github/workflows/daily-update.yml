@@ -11,6 +11,10 @@ on:
 permissions:
   contents: write
 
+# Sensitive credentials (e.g. GEMINI_API_KEY) must be stored as GitHub
+# repository secrets and referenced only via ${{ secrets.GEMINI_API_KEY }}.
+# Never hard-code API keys in this file or in source files.
+
 jobs:
   refresh:
     runs-on: ubuntu-latest
