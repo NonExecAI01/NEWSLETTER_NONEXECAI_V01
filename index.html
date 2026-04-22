@@ -1,4 +1,4 @@
-<!-- LAST_UPDATED: 2026-04-22T07:18:00Z -->
+<!-- LAST_UPDATED: 2026-04-22T06:21:00Z -->
 <!doctype html>
 <html lang="en">
 <head>
@@ -342,7 +342,7 @@
       function scheduleNextRefresh() {
         const now = new Date();
         const next = new Date();
-        next.setUTCHours(6, 0, 0, 0);
+        next.setUTCHours(6, 21, 0, 0);
         if (next <= now) {
           next.setUTCDate(next.getUTCDate() + 1);
         }
@@ -404,6 +404,9 @@
 
           publishedDateEl.textContent = "Published: " + new Date().toUTCString().replace("GMT", "UTC");
           updateIframeHeight();
+        } catch (err) {
+          publishedDateEl.textContent = "Published: unavailable";
+          console.error("buildNewsletter error:", err);
         }
       }
 
