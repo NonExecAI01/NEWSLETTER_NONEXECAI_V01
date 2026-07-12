@@ -186,6 +186,9 @@
     <h2 class="section-title">Additional Top Stories</h2>
     <section id="list-grid" class="list-grid"></section>
 
+    <h2 class="section-title" id="archive-heading" style="display:none">Archive — Previous Stories</h2>
+    <section id="archive-grid" class="list-grid"></section>
+
     <p class="footer-note">Powered by <a href="https://www.non-exec.ai" target="_blank" rel="noopener noreferrer">www.non-exec.ai</a>.</p>
   </div>
 
@@ -228,9 +231,14 @@
       };
 
       const MAX_ARTICLES = 10;
+      const MAX_ARCHIVE_ARTICLES = 10;
       const FEATURED_COUNT = 2;
+      const ARCHIVE_STORAGE_KEY = "newsletter_archive_v1";
+      const MIN_ARCHIVE_AGE_HOURS = 1; // saved articles must be at least this old before showing as archive
       const featuredGridEl = document.getElementById("featured-grid");
       const listGridEl = document.getElementById("list-grid");
+      const archiveGridEl = document.getElementById("archive-grid");
+      const archiveHeadingEl = document.getElementById("archive-heading");
       const publishedDateEl = document.getElementById("published-date");
 
       function formatGoogleNewsRss(query) {
@@ -339,6 +347,43 @@
         });
       }
 
+      function loadArchiveFromStorage() {
+        try {
+          const raw = localStorage.getItem(ARCHIVE_STORAGE_KEY);
+          if (!raw) return [];
+          const parsed = JSON.parse(raw);
+          if (!Array.isArray(parsed)) return [];
+          return parsed.map(function (a) {
+            return Object.assign({}, a, { published: new Date(a.published) });
+          });
+        } catch (_e) {
+          return [];
+        }
+      }
+
+      function saveArchiveToStorage(articles) {
+        try {
+          const serialisable = articles.map(function (a) {
+            return Object.assign({}, a, { published: a.published.toISOString() });
+          });
+          localStorage.setItem(ARCHIVE_STORAGE_KEY, JSON.stringify(serialisable));
+        } catch (_e) {
+          // Storage quota or private-mode denial — silently skip
+        }
+      }
+
+      function renderArchive(articles) {
+        if (!articles.length) {
+          archiveHeadingEl.style.display = "none";
+          archiveGridEl.innerHTML = "";
+          return;
+        }
+        archiveHeadingEl.style.display = "";
+        archiveGridEl.innerHTML = articles.map(function (article) {
+          return articleCardHtml(article, false);
+        }).join("");
+      }
+
       function scheduleNextRefresh() {
         const now = new Date();
         const next = new Date();
@@ -357,40 +402,45 @@
         try {
           const feedUrls = SEARCH_QUERIES.map(formatGoogleNewsRss);
           const allResults = await Promise.allSettled(feedUrls.map(fetchFeed));
-          const merged = [];
-          const dedupe = new Map();
+          const todayMap = new Map();
+          const olderMap = new Map();
           const now = new Date();
 
-          const cutoff = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+          const cutoff24h = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+          const cutoff72h = new Date(now.getTime() - 72 * 60 * 60 * 1000);
 
           allResults.forEach(function (result) {
             if (result.status !== "fulfilled") {
               return;
             }
             result.value.forEach(function (article) {
-              if (article.published < cutoff) {
-                return; // skip articles older than 24 hours
+              if (article.published < cutoff72h) {
+                return; // skip anything older than 72 hours
               }
               const key = article.link.toLowerCase();
               article.score = scoreArticle(article, now);
-              if (!dedupe.has(key) || dedupe.get(key).score < article.score) {
-                dedupe.set(key, article);
+              if (article.published >= cutoff24h) {
+                // Today's articles (< 24 h old)
+                if (!todayMap.has(key) || todayMap.get(key).score < article.score) {
+                  todayMap.set(key, article);
+                }
+              } else {
+                // Older articles (24 h – 72 h old)
+                if (!olderMap.has(key) || olderMap.get(key).score < article.score) {
+                  olderMap.set(key, article);
+                }
               }
             });
           });
 
-          dedupe.forEach(function (value) {
-            merged.push(value);
+          // Build today's top list
+          const todayList = [];
+          todayMap.forEach(function (v) { todayList.push(v); });
+          todayList.sort(function (a, b) {
+            return b.score !== a.score ? b.score - a.score : b.published - a.published;
           });
 
-          merged.sort(function (a, b) {
-            if (b.score !== a.score) {
-              return b.score - a.score;
-            }
-            return b.published - a.published;
-          });
-
-          const top = merged.slice(0, MAX_ARTICLES);
+          const top = todayList.slice(0, MAX_ARTICLES);
           const featured = top.slice(0, FEATURED_COUNT);
           const standard = top.slice(FEATURED_COUNT);
 
@@ -403,6 +453,35 @@
           }).join("");
 
           publishedDateEl.textContent = "Published: " + new Date().toUTCString().replace("GMT", "UTC");
+
+          // Save today's top articles to localStorage so they appear as archive on the next visit
+          if (top.length) {
+            saveArchiveToStorage(top);
+          }
+
+          // Build archive: merge RSS-fetched older articles with anything saved in localStorage
+          const savedArchive = loadArchiveFromStorage();
+          // Only keep saved articles that are at least 1 h old relative to now
+          // (avoids showing today's articles from a previous same-session refresh as "archive")
+          const oneHourAgo = new Date(now.getTime() - MIN_ARCHIVE_AGE_HOURS * 60 * 60 * 1000);
+          const todayLinks = new Set(todayMap.keys());
+          savedArchive.forEach(function (article) {
+            if (article.published > oneHourAgo) return; // skip articles less than MIN_ARCHIVE_AGE_HOURS old to avoid showing today's articles as archive during same-session refreshes
+            const key = article.link.toLowerCase();
+            if (todayLinks.has(key)) return; // already in today's section
+            article.score = scoreArticle(article, now);
+            if (!olderMap.has(key) || olderMap.get(key).score < article.score) {
+              olderMap.set(key, article);
+            }
+          });
+
+          const archiveList = [];
+          olderMap.forEach(function (v) { archiveList.push(v); });
+          archiveList.sort(function (a, b) {
+            return b.score !== a.score ? b.score - a.score : b.published - a.published;
+          });
+
+          renderArchive(archiveList.slice(0, MAX_ARCHIVE_ARTICLES));
           updateIframeHeight();
         } catch (err) {
           publishedDateEl.textContent = "Published: unavailable";
@@ -411,6 +490,13 @@
       }
 
       window.addEventListener("load", function () {
+        // Render any previously-saved archive immediately so returning visitors see yesterday's
+        // stories while the fresh RSS fetch is in flight. The archive will be replaced once
+        // buildNewsletter() completes and merges the fetched older articles with the saved ones.
+        const saved = loadArchiveFromStorage();
+        if (saved.length) {
+          renderArchive(saved.slice(0, MAX_ARCHIVE_ARTICLES));
+        }
         buildNewsletter();
         updateIframeHeight();
         scheduleNextRefresh();
